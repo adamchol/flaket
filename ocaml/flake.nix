@@ -27,7 +27,7 @@
           version = "0.0.1";
 
           buildInputs = [
-            eio
+            eio_main
           ];
         };
 
