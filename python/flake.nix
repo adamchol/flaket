@@ -15,7 +15,22 @@
       devShells.default = pkgs.mkShell {
         buildInputs = with pkgs; [
           alejandra
+          uv
+          python314
+          ruff
+          pyright
         ];
+
+        shellHook = ''
+          export UV_NO_MANAGED_PYTHON=1
+          export UV_PYTHON_DOWNLOADS=never
+
+          if [ ! -d "./.venv" ]; then
+            uv venv
+          fi
+
+          source .venv/bin/activate
+        '';
       };
     });
 }
