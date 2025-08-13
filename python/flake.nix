@@ -21,10 +21,12 @@
           pyright
         ];
 
-        shellHook = ''
-          export UV_NO_MANAGED_PYTHON=1
-          export UV_PYTHON_DOWNLOADS=never
+        env = {
+          UV_NO_MANAGED_PYTHON = 1;
+          UV_PYTHON_DOWNLOADS = "never";
+        };
 
+        shellHook = ''
           if [ ! -d "./.venv" ]; then
             uv venv
           fi
