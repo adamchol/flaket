@@ -1,8 +1,8 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/64334fda8d632bec7c80c9bef668ad9633a8dd64";
+    nixpkgs.url = "github:nixos/nixpkgs/f98e6d6d045102d2e2cd3c527c6a2eca18386192";
     flake-utils.url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
-    ocaml-overlays.url = "github:nix-ocaml/nix-overlays/0cb4c494c441b78462606d5c26ce5df52b4dc900";
+    ocaml-overlays.url = "github:nix-ocaml/nix-overlays/f98e6d6d045102d2e2cd3c527c6a2eca18386192";
   };
 
   outputs = {
