@@ -16,7 +16,7 @@
         inherit system;
         overlays = [
           ocaml-overlays.overlays.default
-          (final: prev: {ocamlPackages = prev.ocaml-ng.ocamlPackages_5_3;})
+          (final: prev: {ocamlPackages = prev.ocaml-ng.ocamlPackages_5_4;})
           (import ./nix/overlay.nix)
         ];
       };
