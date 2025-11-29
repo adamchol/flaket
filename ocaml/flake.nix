@@ -34,7 +34,7 @@
       devShells.default = pkgs.mkShell {
         inputsFrom = [packages.default];
         buildInputs = with pkgs; [
-          alejandra
+          nixfmt-rfc-style
           ocamlPackages.ocaml-lsp
           ocamlformat
         ];

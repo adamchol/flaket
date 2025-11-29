@@ -14,7 +14,7 @@
     in {
       devShells.default = pkgs.mkShell {
         buildInputs = with pkgs; [
-          alejandra
+          nixfmt-rfc-style
           uv
           python314
           ruff
