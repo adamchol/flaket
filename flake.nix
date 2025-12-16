@@ -17,6 +17,11 @@
         path = ./python;
         description = "UV-based python project starter";
       };
+
+      rust = {
+        path = ./rust;
+        description = "Basic cargo-based Rust project.";
+      };
     };
 
     defaultTemplate = self.templates.trivial;
