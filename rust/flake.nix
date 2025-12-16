@@ -13,13 +13,13 @@
       pkgs = import nixpkgs {inherit system;};
     in {
       packages.default = let
-        manifest = (pkgsRust.lib.importTOML ./Cargo.toml).package;
+        manifest = (pkgs.lib.importTOML ./Cargo.toml).package;
       in
-        pkgsRust.rustPlatform.buildRustPackage {
+        pkgs.rustPlatform.buildRustPackage {
           name = manifest.name;
           version = manifest.version;
           cargoLock.lockFile = ./Cargo.lock;
-          src = with pkgsRust.lib.fileset;
+          src = with pkgs.lib.fileset;
             toSource {
               root = ./.;
               fileset = unions [
