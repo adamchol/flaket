@@ -1,46 +1,62 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/3a27eb4be1a058b1218aa06775bf1ac077adbba2";
-    flake-utils.url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
-    ocaml-overlays.url = "github:nix-ocaml/nix-overlays/f98e6d6d045102d2e2cd3c527c6a2eca18386192";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+    ocaml-overlays.inputs.nixpkgs.follows = "nixpkgs";
+    ocaml-overlays.url = "github:nix-ocaml/nix-overlays/7c53d7861587897b5bd33056a23a99c18b2716a7";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    flake-utils,
-    ocaml-overlays,
-  }:
-    flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [
-          ocaml-overlays.overlays.default
-          (final: prev: {ocamlPackages = prev.ocaml-ng.ocamlPackages_5_3;})
-          (import ./nix/overlay.nix)
-        ];
-      };
-    in rec {
-      packages.default = with pkgs.ocamlPackages;
-        buildDunePackage {
-          pname = "ocaml-project";
-          version = "0.0.1";
+  outputs =
+    inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
 
-          buildInputs = [
-            eio_main
-          ];
+      perSystem =
+        {
+          config,
+          pkgs,
+          system,
+          ...
+        }:
+        {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [
+              inputs.ocaml-overlays.overlays.default
+              (final: prev: { ocamlPackages = prev.ocaml-ng.ocamlPackages_5_4; })
+              (import ./nix/overlay.nix)
+            ];
+          };
+
+          formatter = pkgs.nixfmt;
+
+          packages.default =
+            with pkgs.ocamlPackages;
+            buildDunePackage {
+              pname = "ocaml-project";
+              version = "0.0.1";
+
+              buildInputs = [
+                eio_main
+              ];
+            };
+
+          devShells.default = pkgs.mkShell {
+            inputsFrom = [ config.packages.default ];
+            buildInputs = with pkgs; [
+              nixfmt
+              ocamlPackages.ocaml-lsp
+              ocamlformat
+            ];
+            shellHook = ''
+              export PATH=$PATH:$(pwd)/_build/install/default/bin
+            '';
+          };
         };
-
-      devShells.default = pkgs.mkShell {
-        inputsFrom = [packages.default];
-        buildInputs = with pkgs; [
-          nixfmt-rfc-style
-          ocamlPackages.ocaml-lsp
-          ocamlformat
-        ];
-        shellHook = ''
-          export PATH=$PATH:$(pwd)/_build/install/default/bin
-        '';
-      };
-    });
+    };
 }

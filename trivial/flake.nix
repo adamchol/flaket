@@ -1,21 +1,27 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/3a27eb4be1a058b1218aa06775bf1ac077adbba2";
-    flake-utils.url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    flake-utils,
-  }:
-    flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = import nixpkgs {inherit system;};
-    in {
-      devShells.default = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          nixfmt-rfc-style
-        ];
+  outputs =
+    inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
+
+      perSystem = { pkgs, ... }: {
+        formatter = pkgs.nixfmt;
+
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            nixfmt
+          ];
+        };
       };
-    });
+    };
 }
