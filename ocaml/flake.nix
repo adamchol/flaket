@@ -3,6 +3,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+    dnvr.url = "github:dialohq/dnvr";
+    dnvr.inputs.nixpkgs.follows = "nixpkgs";
     ocaml-overlays.inputs.nixpkgs.follows = "nixpkgs";
     ocaml-overlays.url = "github:nix-ocaml/nix-overlays/7c53d7861587897b5bd33056a23a99c18b2716a7";
   };
@@ -15,6 +17,8 @@
         "aarch64-linux"
         "aarch64-darwin"
       ];
+
+      imports = [ inputs.dnvr.flakeModule ];
 
       perSystem =
         {
@@ -46,15 +50,17 @@
               ];
             };
 
-          devShells.default = pkgs.mkShell {
-            inputsFrom = [ config.packages.default ];
-            buildInputs = with pkgs; [
-              nixfmt
-              ocamlPackages.ocaml-lsp
-              ocamlformat
-            ];
+          dnvr.shells.default = {
+            packages =
+              config.packages.default.nativeBuildInputs
+              ++ config.packages.default.buildInputs
+              ++ (with pkgs; [
+                nixfmt
+                ocamlPackages.ocaml-lsp
+                ocamlformat
+              ]);
             shellHook = ''
-              export PATH=$PATH:$(pwd)/_build/install/default/bin
+              export PATH=$PATH:$DNVR_ROOT/_build/install/default/bin
             '';
           };
         };

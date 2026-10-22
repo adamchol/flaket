@@ -3,6 +3,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+    dnvr.url = "github:dialohq/dnvr";
+    dnvr.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -14,11 +16,13 @@
         "aarch64-darwin"
       ];
 
+      imports = [ inputs.dnvr.flakeModule ];
+
       perSystem = { pkgs, ... }: {
         formatter = pkgs.nixfmt;
 
-        devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
+        dnvr.shells.default = {
+          packages = with pkgs; [
             nixfmt
           ];
         };
